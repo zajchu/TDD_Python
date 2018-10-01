@@ -26,9 +26,18 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys('Kupic pawie piora')
         input_box.send_keys(Keys.ENTER)
 
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Uzyc pawich pior do zrobienia przynety')
+        input_box.send_keys(Keys.ENTER)
+
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == '1: Kupic pawie piora' for row in rows), "Nowy element nie znajduje się w tabeli")
+        self.assertIn('1: Kupic pawie piora', [row.text for row in rows])
+        self.assertIn('2: Uzyc pawich pior do zrobienia przynety', [row.text for row in rows])
+
+        # self.assertTrue(any(row.text == '1: Kupic pawie piora' for row in rows),
+        #                 f"Nowy element nie znajduje się w tabeli - jego tekst to \n{table.text}")
+
 
         self.fail("Zakończenie testu")
 
