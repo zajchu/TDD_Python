@@ -22,27 +22,55 @@ class HomePageTest(TestCase):
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content.decode(), expected_html)
 
-    def test_home_page_can_save_a_post_request(self):
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_home_page_can_save_a_POST_request(self):
         request = HttpRequest()
         request.method = 'POST'
-        post_value = 'Nowy element listy'
-        request.POST['item_text'] = post_value
-        expected_html = render_to_string('home.html', {'new_item_text': post_value})
+        request.POST['item_text'] = 'Nowy element listy'
 
         response = home_page(request)
 
-        self.assertIn(post_value, response.content.decode())
-        self.assertEqual(response.content.decode(), expected_html)
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'Nowy element listy')
+
+    def test_home_page_redirect_after_POST(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['item_text'] = 'Nowy element listy'
+
+        response = home_page(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_home_page_displays_all_list_items(self):
+
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        request = HttpRequest()
+        response = home_page(request)
+
+        self.assertIn('itemey 1', response.content.decode())
+        self.assertIn('itemey 2', response.content.decode())
+
+
+
 
 
 class ItemModelTest(TestCase):
 
     def test_saving_and_retrieving_items(self):
-        first_item: models.Model = Item()
+        first_item = Item()
         first_item.text = 'Absolutnie piesrwszy element listy'
         first_item.save()
 
-        second_item: models.Model = Item()
+        second_item = Item()
         second_item.text = 'Drugi element'
         second_item.save()
 
