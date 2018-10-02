@@ -33,6 +33,8 @@ class NewVisitorTest(LiveServerTestCase):
 
         input_box.send_keys('Kupic pawie piora')
         input_box.send_keys(Keys.ENTER)
+        edith_st_url = self.browser.current_url
+        self.assertRegex(edith_st_url, '/lists/.+')
         self.check_row_for_in_list_table('1: Kupic pawie piora')
 
         input_box = self.browser.find_element_by_id('id_new_item')

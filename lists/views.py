@@ -13,3 +13,17 @@ def home_page(request: HttpRequest):
         return redirect('/')
     items = Item.objects.all()
     return render(request, 'home.html', {'items': items})
+
+
+class Employee:
+    def atributes(self):
+        pass
+
+
+def hire_candidate(candidate: Employee) -> str:
+    if candidate.atributes in [
+        "motivated",
+        "creative",
+        "funny"
+    ]:
+        return "".join("to US!")
